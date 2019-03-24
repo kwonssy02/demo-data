@@ -1,5 +1,6 @@
 package com.autoever.demodata;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -16,17 +17,22 @@ import java.util.List;
 @Transactional
 public class JpaRunner implements ApplicationRunner {
 
-    @PersistenceContext
-    EntityManager entityManager;
+    @Autowired
+    PostRepository postRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Post> query = builder.createQuery(Post.class);
-        Root<Post> root = query.from(Post.class);
-        query.select(root);
 
-        List<Post> posts = entityManager.createQuery(query).getResultList();
-        posts.forEach(System.out::println);
+        Post post = new Post();
+        post.setTitle("spring2");
+
+        Comment comment = new Comment();
+        comment.setComment("hello");
+
+        post.addComment(comment);
+
+        postRepository.save(post);
+
+        postRepository.findAll().forEach(System.out::println);
     }
 }
